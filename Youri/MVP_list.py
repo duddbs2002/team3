@@ -14,7 +14,7 @@ data = []
 rows = soup.select("#contents > div.sub-content > table > tbody > tr")
 
 for row in rows:
-    cells = [cell.text.strip() for cell in row.find_all('td')]
+    cells = [cell.get_text(strip=True, separator=" ") for cell in row.find_all('td')]
     if cells:
         data.append(cells)
 
