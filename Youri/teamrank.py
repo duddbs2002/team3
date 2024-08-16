@@ -51,13 +51,13 @@ def scrape_team_rank(driver, logger):
     headers = []
 
     # 2001년부터 2024년까지 데이터 수집
-    for year in range(2001, 2025):
+    for year in range(1982, 2025):
         # 드롭다운에서 연도 선택
         select = Select(driver.find_element(By.CSS_SELECTOR, "#cphContents_cphContents_cphContents_ddlYear"))
         select.select_by_value(str(year))
 
         # 2초에서 5초 사이에 랜덤하게 대기
-        wait_time = random.uniform(2, 5)
+        wait_time = random.uniform(3, 6)
         time.sleep(wait_time)
 
         # 테이블 로드 대기
@@ -81,7 +81,7 @@ def scrape_team_rank(driver, logger):
         logger.debug(f"{year}년 데이터 수집 완료!")
 
     # CSV 파일로 저장
-    save_to_csv("팀랭크데이터(2001-2024).csv", headers=headers, data=all_data)
+    save_to_csv("team_rank.csv", headers=headers, data=all_data)
 
 def main():
     logger = get_logger("TeamRankScraper")
