@@ -4,25 +4,22 @@ import pandas as pd
 import re
 
 def fetch_html(url):
-    #URL에서 HTML을 가져옵니다.
     response = requests.get(url)
     response.raise_for_status()
     return response.text
 
 def parse_table_header(soup):
-    #테이블의 헤더를 파싱합니다.
     thead = soup.select_one("#tblHistory > thead")
     if thead:
         header = [th.text.strip() for th in thead.find_all("th")]
     else:
         header = ["Year", "Total Attendance", "Games", "Average Attendance", "Per Game Average"]
     
-    # '_avg' 추가된 헤더 생성
+    # '_avg' 추가
     header_avg = [f"{h}_avg" if h else '' for h in header]
     return header, header_avg
 
 def parse_table_data(soup):
-    # 테이블의 데이터를 파싱합니다.
     rows = soup.select("#tblHistory > tbody > tr")
     data = []
 
@@ -51,30 +48,23 @@ def parse_table_data(soup):
 
 
 def save_to_csv(data, header, header_avg, filename):
-    #데이터를 CSV 파일로 저장합니다.
-    full_header = header + header_avg  # 원래 헤더 + '_avg' 헤더
+    full_header = header + header_avg
     df = pd.DataFrame(data, columns=full_header)
     df.to_csv(filename, index=False, encoding='utf-8')
 
 def main(url, output_csv):
-    #메인 함수 - 전체 스크래핑 작업을 수행합니다.
-    # HTML 가져오기
+
     html = fetch_html(url)
-    
-    # BeautifulSoup 객체 생성
+
     soup = BeautifulSoup(html, 'html.parser')
-    
-    # 헤더 파싱
+
     header, header_avg = parse_table_header(soup)
-    
-    # 데이터 파싱
+
     data = parse_table_data(soup)
-    
-    # CSV 파일로 저장
+
     save_to_csv(data, header, header_avg, output_csv)
     print(f"CSV 파일로 저장이 완료되었습니다: {output_csv}")
 
-# 실행
 if __name__ == "__main__":
     url = "https://www.koreabaseball.com/Record/Crowd/History.aspx"
     output_csv = "kbo_crowd_history.csv"
